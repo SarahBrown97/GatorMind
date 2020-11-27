@@ -1,1 +1,1 @@
-# MentalDigitalHealthPlatform
+# GatorMind
