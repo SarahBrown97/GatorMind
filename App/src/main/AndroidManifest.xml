@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.onecare">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission-sdk-23 android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+
 
 
     <application
@@ -22,6 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:process=":remote" android:name = ".utility.NotificationPublisher" />
     </application>
 
 </manifest>
