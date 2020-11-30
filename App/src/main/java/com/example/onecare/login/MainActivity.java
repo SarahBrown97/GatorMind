@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void validate(String userName, String passWord ){
-        if((userName.equalsIgnoreCase("Admin"))&&(passWord.equals("1234"))){
+        if((passWord.equals("1234"))){
             Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_SHORT).show();
            Intent intent= new Intent(MainActivity.this, Reporting.class);
            Singleton.getInstance().setUsername(userName);

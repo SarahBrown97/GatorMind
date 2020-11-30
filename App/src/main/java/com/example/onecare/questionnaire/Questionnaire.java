@@ -34,7 +34,7 @@ public class Questionnaire extends AppCompatActivity {
     private ListView listView;
     private QuestionAdapter questionAdapter;
     private Button buttonSubmit;
-    String url ="http://10.3.4.252:8081";
+    String url ="http://10.254.0.1:8081";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

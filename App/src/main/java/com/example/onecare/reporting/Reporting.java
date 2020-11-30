@@ -1,10 +1,17 @@
 package com.example.onecare.reporting;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,11 +26,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.onecare.R;
+import com.example.onecare.login.MainActivity;
 import com.example.onecare.login.Singleton;
 import com.example.onecare.questionnaire.QuestionClass;
 import com.example.onecare.questionnaire.Questionnaire;
 import com.example.onecare.questionnaire.QuestionnaireClass;
-import com.example.onecare.webservice.WebServiceManager;
+import com.example.onecare.utility.NotificationPublisher;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +40,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.onecare.utility.NotificationPublisher.NOTIFICATION_CHANNEL_ID;
 
 public class Reporting extends AppCompatActivity {
     private Button pending;
@@ -96,7 +106,7 @@ public class Reporting extends AppCompatActivity {
     }
 
     private void getQuestionnaires(){
-        String url ="http://10.3.4.252:8081";
+        String url ="http://10.254.0.1:8081";
         RequestQueue queue = Volley.newRequestQueue(this);
         String getQuestionnaireUrl= url+"/qolList/"+ Singleton.getInstance().getUsername();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, getQuestionnaireUrl,null,
@@ -117,6 +127,7 @@ public class Reporting extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         listQuestionnaires.addAll(questionnaireList);
+                        scheduleNotification();
                         refreshListView();
                     }
                 }, new Response.ErrorListener() {
@@ -147,7 +158,37 @@ public class Reporting extends AppCompatActivity {
             completed.setBackgroundColor(Color.GRAY);
             completed.setEnabled(true);
             pending.setEnabled(false);
-
         }
+    }
+    private void scheduleNotification () {
+        for(QuestionnaireClass questionnaireClass: listQuestionnaires){
+            if(!questionnaireClass.isCompleted){
+                Notification notification= buildQuestionnaireNotification(questionnaireClass);
+                Intent notificationIntent = new Intent( this.getApplicationContext(), NotificationPublisher. class ) ;
+                notificationIntent.putExtra(NotificationPublisher. NOTIFICATION_ID , questionnaireClass.id ) ;
+                notificationIntent.putExtra(NotificationPublisher. NOTIFICATION , notification) ;
+                PendingIntent pendingIntent = PendingIntent. getBroadcast ( this, 0 , notificationIntent , 0) ;
+                long futureInMillis = System.currentTimeMillis() + 15*1000 ;
+                AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context. ALARM_SERVICE ) ;
+                assert alarmManager != null;
+                alarmManager.setAndAllowWhileIdle(AlarmManager. RTC_WAKEUP, futureInMillis , pendingIntent); ;
+                System.out.println("schedule notification");
+                System.out.println(futureInMillis);
+            }
+        }
+    }
+    private Notification buildQuestionnaireNotification (QuestionnaireClass questionnaireClass) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder( this.getApplicationContext(),"GatorMind_101") ;
+        builder.setContentTitle( "Questionnaire " + questionnaireClass.id ) ;
+        builder.setContentText("You have a pending questionnaire") ;
+        builder.setSmallIcon(R.drawable. icon_small ) ;
+        builder.setAutoCancel( true ) ;
+        builder.setChannelId( NOTIFICATION_CHANNEL_ID ) ;
+        Intent intent = new Intent(this.getApplicationContext(), Questionnaire.class);
+        intent.putExtra("QUESTIONNAIRE_ID", questionnaireClass.id);
+        intent.putExtra("QUESTIONNAIRE_COMPLETED",questionnaireClass.isCompleted);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        builder.setContentIntent(pendingIntent);
+        return builder.build() ;
     }
 }
