@@ -105,7 +105,7 @@ public class Reporting extends AppCompatActivity {
 
     }
 
-    private void getQuestionnaires(){
+    public void getQuestionnaires(){
         String url ="http://10.254.0.1:8081";
         RequestQueue queue = Volley.newRequestQueue(this);
         String getQuestionnaireUrl= url+"/qolList/"+ Singleton.getInstance().getUsername();
@@ -179,12 +179,12 @@ public class Reporting extends AppCompatActivity {
     }
     private Notification buildQuestionnaireNotification (QuestionnaireClass questionnaireClass) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder( this.getApplicationContext(),"GatorMind_101") ;
-        builder.setContentTitle( "Questionnaire " + questionnaireClass.id ) ;
-        builder.setContentText("You have a pending questionnaire") ;
+        builder.setContentTitle( "GatorMind" ) ;
+        builder.setContentText("You have some pending tasks") ;
         builder.setSmallIcon(R.drawable. icon_small ) ;
         builder.setAutoCancel( true ) ;
         builder.setChannelId( NOTIFICATION_CHANNEL_ID ) ;
-        Intent intent = new Intent(this.getApplicationContext(), Questionnaire.class);
+        Intent intent = new Intent(this.getApplicationContext(), Reporting.class);
         intent.putExtra("QUESTIONNAIRE_ID", questionnaireClass.id);
         intent.putExtra("QUESTIONNAIRE_COMPLETED",questionnaireClass.isCompleted);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);

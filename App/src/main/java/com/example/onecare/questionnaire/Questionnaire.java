@@ -2,6 +2,7 @@ package com.example.onecare.questionnaire;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +18,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.onecare.R;
+import com.example.onecare.login.MainActivity;
 import com.example.onecare.login.Singleton;
+import com.example.onecare.reporting.Reporting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +64,10 @@ public class Questionnaire extends AppCompatActivity {
             System.out.println(questionClass.answer);
         }
         submitResponse();
+        Intent intent= new Intent(this, Reporting.class);
+        startActivity(intent);
     }
+
     private void refreshListView(){
        // questionAdapter.clear();
        // questionAdapter.addAll(filteredQuestionnaires);
@@ -97,7 +103,7 @@ public class Questionnaire extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        questionList.add(new QuestionClass(7,"What is your name?", QuestionClass.Type.TEXT, "Hello"));
+                        //questionList.add(new QuestionClass(7,"What is your name?", QuestionClass.Type.TEXT, "Hello"));
                         questions.addAll(questionList);
                         refreshListView();
                         System.out.println(questionList);
@@ -136,9 +142,13 @@ public class Questionnaire extends AppCompatActivity {
                         @Override
                         public void onResponse(String response) {
                            System.out.println(response);
+                            //Reporting next = new Reporting();
                            if(response.equalsIgnoreCase("Success")){
                                Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_SHORT).show();
                                finish();
+                               //refreshListView();
+                               //next.getQuestionnaires();
+                               //refreshListView();
                            }else {
                                Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
                            }
