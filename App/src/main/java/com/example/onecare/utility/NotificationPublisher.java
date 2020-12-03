@@ -7,10 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.onecare.questionnaire.Questionnaire;
-import com.example.onecare.questionnaire.QuestionnaireClass;
-import com.example.onecare.reporting.Reporting;
-
 public class NotificationPublisher extends BroadcastReceiver {
     public static final String NOTIFICATION_CHANNEL_ID = "GatorMind_101" ;
     public static String NOTIFICATION_ID = "notification-id" ;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_questionnaire">
+
+    <fragment
+        android:id="@+id/nav_questionnaire"
+        android:name="com.example.onecare.ui.reporting.ReportingFragment"
+        android:label="Questionnaire"
+        tools:layout="@layout/fragment_reporting" />
+
+    <fragment
+        android:id="@+id/nav_peer_support"
+        android:name="com.example.onecare.ui.peerSupport.PeerSupportFragment"
+        android:label="Peer Support"
+        tools:layout="@layout/fragment_gallery" />
+
+</navigation>
