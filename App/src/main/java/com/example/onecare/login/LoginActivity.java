@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.onecare.R;
 import com.example.onecare.navigation.NavigationActivity;
+import com.example.onecare.utility.Singleton;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText userName;

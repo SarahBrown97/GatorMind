@@ -20,13 +20,26 @@
         <activity
             android:name=".navigation.NavigationActivity"
             android:label="@string/title_activity_navigation"
-            android:theme="@style/Theme.OneCare.NoActionBar"></activity>
+            android:theme="@style/Theme.OneCare.NoActionBar"
+            android:launchMode="singleTop"/>
         <activity android:name=".ui.questionnaire.Questionnaire" />
         <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.peerSupport.ZoomActivity"
+            android:label="Meeting Peers"
+            android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 

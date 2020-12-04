@@ -1,14 +1,16 @@
 package com.example.onecare.navigation;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Menu;
+import android.widget.FrameLayout;
 
 import com.example.onecare.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.onecare.ui.reporting.ReportingFragment;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -32,7 +34,7 @@ public class NavigationActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_questionnaire, R.id.nav_peer_support)
+                R.id.nav_reporting, R.id.nav_peer_support)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -52,5 +54,15 @@ public class NavigationActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
     }
 }
