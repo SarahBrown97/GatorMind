@@ -25,8 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.onecare.R;
-import com.example.onecare.login.LoginActivity;
-import com.example.onecare.login.Singleton;
+import com.example.onecare.utility.Singleton;
 import com.example.onecare.navigation.NavigationActivity;
 import com.example.onecare.ui.questionnaire.Questionnaire;
 import com.example.onecare.ui.questionnaire.QuestionnaireClass;
@@ -41,6 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.onecare.utility.Constants.API_GET_QUESTIONNAIRES;
+import static com.example.onecare.utility.Constants.PIPE;
+import static com.example.onecare.utility.Constants.SERVER_URL;
 import static com.example.onecare.utility.NotificationPublisher.NOTIFICATION_CHANNEL_ID;
 
 public class ReportingFragment extends Fragment {
@@ -119,9 +121,8 @@ public class ReportingFragment extends Fragment {
 
     public void getQuestionnaires(){
         listQuestionnaires.clear();
-        String url ="http://10.254.0.1:8081";
         RequestQueue queue = Volley.newRequestQueue(this.getContext());
-        String getQuestionnaireUrl= url+"/qolList/"+ Singleton.getInstance().getUsername();
+        String getQuestionnaireUrl= SERVER_URL + PIPE + API_GET_QUESTIONNAIRES + PIPE + Singleton.getInstance().getUsername();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, getQuestionnaireUrl,null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -142,7 +143,9 @@ public class ReportingFragment extends Fragment {
                         }
                         listQuestionnaires.addAll(questionnaireList);
                         filterQuestionnaire();
-                        scheduleNotification();
+                        if(questionnaireList.size() > 0) {
+                            scheduleNotification();
+                        }
                         refreshListView();
                     }
                 }, new Response.ErrorListener() {
@@ -164,32 +167,32 @@ public class ReportingFragment extends Fragment {
 
     private void scheduleNotification () {
         for(QuestionnaireClass questionnaireClass: listQuestionnaires){
-            if(!questionnaireClass.isCompleted){
-                Notification notification= buildQuestionnaireNotification(questionnaireClass);
+            if(!questionnaireClass.isCompleted && this.getActivity().getIntent() != null &&
+                    !this.getActivity().getIntent().getBooleanExtra("IS_NOTIFICATION_INTENT", false)){
+                Notification notification= buildQuestionnaireNotification();
                 Intent notificationIntent = new Intent( this.getContext(), NotificationPublisher. class ) ;
                 notificationIntent.putExtra(NotificationPublisher. NOTIFICATION_ID , questionnaireClass.id ) ;
                 notificationIntent.putExtra(NotificationPublisher. NOTIFICATION , notification) ;
-                PendingIntent pendingIntent = PendingIntent. getBroadcast ( this.getContext(), 0 , notificationIntent , 0) ;
+                PendingIntent pendingIntent = PendingIntent. getBroadcast ( this.getContext(), 0 , notificationIntent ,0) ;
                 long futureInMillis = System.currentTimeMillis() + 15*1000 ;
                 AlarmManager alarmManager = (AlarmManager) this.getActivity().getSystemService(Context. ALARM_SERVICE ) ;
                 assert alarmManager != null;
-                alarmManager.setAndAllowWhileIdle(AlarmManager. RTC_WAKEUP, futureInMillis , pendingIntent); ;
-                System.out.println("schedule notification");
-                System.out.println(futureInMillis);
+                alarmManager.setAndAllowWhileIdle(AlarmManager. RTC_WAKEUP, futureInMillis , pendingIntent); ;;
+                break;
             }
         }
     }
-    private Notification buildQuestionnaireNotification (QuestionnaireClass questionnaireClass) {
+    private Notification buildQuestionnaireNotification () {
         NotificationCompat.Builder builder = new NotificationCompat.Builder( this.getContext(),"GatorMind_101") ;
         builder.setContentTitle( "GatorMind" ) ;
-        builder.setContentText("You have some pending tasks") ;
+        builder.setContentText("Please complete the pending tasks") ;
         builder.setSmallIcon(R.drawable. icon_small ) ;
         builder.setAutoCancel( true ) ;
         builder.setChannelId( NOTIFICATION_CHANNEL_ID ) ;
+        builder.setOngoing(true);
         Intent intent = new Intent(this.getContext(), NavigationActivity.class);
-        intent.putExtra("QUESTIONNAIRE_ID", questionnaireClass.id);
-        intent.putExtra("QUESTIONNAIRE_COMPLETED",questionnaireClass.isCompleted);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this.getContext(), 0, intent, 0);
+        intent.putExtra("IS_NOTIFICATION_INTENT", true);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
         builder.setContentIntent(pendingIntent);
         return builder.build() ;
     }

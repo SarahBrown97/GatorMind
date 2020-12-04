@@ -2,7 +2,6 @@ package com.example.onecare.ui.questionnaire;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +17,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.onecare.R;
-import com.example.onecare.login.Singleton;
+import com.example.onecare.utility.Singleton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +27,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.onecare.utility.Constants.API_GET_QUESTIONNAIRE;
+import static com.example.onecare.utility.Constants.API_POST_QUESTIONNAIRE;
+import static com.example.onecare.utility.Constants.PIPE;
+import static com.example.onecare.utility.Constants.SERVER_URL;
+
 public class Questionnaire extends AppCompatActivity {
     private int questionnaireId;
     private boolean isCompleted;
@@ -35,7 +39,6 @@ public class Questionnaire extends AppCompatActivity {
     private ListView listView;
     private QuestionAdapter questionAdapter;
     private Button buttonSubmit;
-    String url ="http://10.254.0.1:8081";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +75,7 @@ public class Questionnaire extends AppCompatActivity {
 
     private void getQuestions(){
         RequestQueue queue = Volley.newRequestQueue(this);
-        String getQuestionnaireUrl= url+"/qol/"+ Singleton.getInstance().getUsername() +"/"+ questionnaireId;
+        String getQuestionnaireUrl= SERVER_URL + PIPE + API_GET_QUESTIONNAIRE + PIPE + Singleton.getInstance().getUsername() +"/"+ questionnaireId;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, getQuestionnaireUrl,null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -114,7 +117,7 @@ public class Questionnaire extends AppCompatActivity {
     private void submitResponse(){
         try{
             RequestQueue queue = Volley.newRequestQueue(this);
-            String getQuestionnaireUrl= url+"/qol";
+            String getQuestionnaireUrl= SERVER_URL + PIPE + API_POST_QUESTIONNAIRE;
             JSONObject jsonBody= new JSONObject();
             jsonBody.put("userID",Singleton.getInstance().getUsername());
             jsonBody.put("questionnaireID",questionnaireId);
