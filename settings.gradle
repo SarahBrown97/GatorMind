@@ -1,4 +1,2 @@
-include ':mobilertc'
-include ':commonlib'
 include ':app'
 rootProject.name = "OneCare"
