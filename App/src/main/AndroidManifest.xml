@@ -32,7 +32,7 @@
         </activity>
 
         <activity android:name=".ui.peerSupport.ZoomActivity"
-            android:label="Meeting Peers"
+            android:label="Meet Peers"
             android:configChanges="screenSize|orientation|keyboardHidden|keyboard"
             android:screenOrientation="portrait">
 

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.onecare.utility.Constants.API_GET_PEER_GROUP_DETAILS;
+import static com.example.onecare.utility.Constants.KEY_GROUP_ID;
 import static com.example.onecare.utility.Constants.PIPE;
 import static com.example.onecare.utility.Constants.SERVER_URL;
 
@@ -54,7 +55,6 @@ public class PeerSupportFragment extends Fragment {
     }
 
     private void updatePeerDetails(){
-
         if (listMembers.size() > 0){
             txtGroup.setText("Group " + groupID);
             StringBuilder sbMembers = new StringBuilder("Peers: ");
@@ -69,10 +69,10 @@ public class PeerSupportFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getActivity(), ZoomActivity.class);
+                    intent.putExtra(KEY_GROUP_ID, groupID);
                     startActivity(intent);
                 }
             });
-
         }
         else
         {

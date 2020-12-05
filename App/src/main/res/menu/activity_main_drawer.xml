@@ -7,7 +7,7 @@
         <item
             android:id="@+id/nav_reporting"
             android:icon="@drawable/questionnaire"
-            android:title="Questionnaire" />
+            android:title="Questionnaires" />
         <item
             android:id="@+id/nav_peer_support"
             android:icon="@drawable/peer"
