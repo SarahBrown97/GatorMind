@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_reporting"
         android:name="com.example.onecare.ui.reporting.ReportingFragment"
-        android:label="Questionnaire"
+        android:label="Questionnaires"
         tools:layout="@layout/fragment_reporting" />
 
     <fragment

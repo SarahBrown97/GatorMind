@@ -7,9 +7,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.onecare.R;
+import com.example.onecare.ui.questionnaire.QuestionClass;
+import com.example.onecare.utility.Singleton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 import us.zoom.sdk.JoinMeetingOptions;
 import us.zoom.sdk.JoinMeetingParams;
@@ -21,9 +37,17 @@ import us.zoom.sdk.ZoomSDK;
 import us.zoom.sdk.ZoomSDKAuthenticationListener;
 import us.zoom.sdk.ZoomSDKInitParams;
 import us.zoom.sdk.ZoomSDKInitializeListener;
-import androidx.appcompat.app.AppCompatActivity;
+
+import static com.example.onecare.utility.Constants.API_POST_QUESTIONNAIRE;
+import static com.example.onecare.utility.Constants.KEY_GROUP_ID;
+import static com.example.onecare.utility.Constants.PIPE;
+import static com.example.onecare.utility.Constants.SERVER_URL;
+import static  com.example.onecare.utility.Constants.API_PEER_NOTES;
 
 public class ZoomActivity extends AppCompatActivity {
+    private EditText editTextNotes;
+    private int groupID;
+
     private ZoomSDKAuthenticationListener authListener = new ZoomSDKAuthenticationListener() {
         /**
          * This callback is invoked when a result from the SDK's request to the auth server is
@@ -49,6 +73,9 @@ public class ZoomActivity extends AppCompatActivity {
         setContentView(com.example.onecare.R.layout.zoom_front);
 
         initializeSdk(this);
+       String groupIDString = getIntent().getStringExtra(KEY_GROUP_ID);
+       groupID = Integer.parseInt(groupIDString);
+
         initViews();
     }
 
@@ -79,13 +106,13 @@ public class ZoomActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        findViewById(com.example.onecare.R.id.join_button).setOnClickListener(new View.OnClickListener() {@Override
+        findViewById(R.id.join_button).setOnClickListener(new View.OnClickListener() {@Override
         public void onClick(View view) {
             createJoinMeetingDialog();
         }
         });
 
-        findViewById(com.example.onecare.R.id.login_button).setOnClickListener(new View.OnClickListener() {@Override
+        findViewById(R.id.login_button).setOnClickListener(new View.OnClickListener() {@Override
         public void onClick(View view) {
             if (ZoomSDK.getInstance().isLoggedIn()) {
                 startMeeting(ZoomActivity.this);
@@ -94,6 +121,7 @@ public class ZoomActivity extends AppCompatActivity {
             }
         }
         });
+        findViewById(R.id.btnSubmit).setOnClickListener(this::submitNotes);
     }
 
     /**
@@ -103,7 +131,7 @@ public class ZoomActivity extends AppCompatActivity {
         MeetingService meetingService = ZoomSDK.getInstance().getMeetingService();
         JoinMeetingOptions options = new JoinMeetingOptions();
         JoinMeetingParams params = new JoinMeetingParams();
-        params.displayName = "Aseesh"; // TODO: Enter your name
+        params.displayName = Singleton.getInstance().getUsername(); // TODO: Enter your name
         params.meetingNo = meetingNumber;
         params.password = password;
         meetingService.joinMeetingWithParams(context, params, options);
@@ -176,5 +204,54 @@ public class ZoomActivity extends AppCompatActivity {
             dialog.dismiss();
         }
         }).show();
+    }
+
+    private void submitNotes(View view){
+        try{
+            RequestQueue queue = Volley.newRequestQueue(this);
+            editTextNotes = (EditText) findViewById(R.id.editTextNotes);
+            String getQuestionnaireUrl= SERVER_URL + PIPE + API_PEER_NOTES;
+            JSONObject jsonBody= new JSONObject();
+            jsonBody.put("peerGroupId", groupID);
+            jsonBody.put("peerId", Singleton.getInstance().getUsername());
+            jsonBody.put("notes", editTextNotes.getText());
+            final String requestBody= jsonBody.toString();
+            System.out.println(jsonBody);
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, getQuestionnaireUrl,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println(response);
+                            if(response.equalsIgnoreCase("Success")){
+                                Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_SHORT).show();
+                            }else {
+                                Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    System.out.println(error.getLocalizedMessage());
+                }
+            }){
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+                @Override
+                public byte[] getBody() throws AuthFailureError {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        uee.printStackTrace();
+                        return null;
+                    }
+                }
+            };
+            queue.add(stringRequest);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
